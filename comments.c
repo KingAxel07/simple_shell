@@ -2,10 +2,10 @@
 
 /**
  * semicolon - search if in the input there is a ";" or a ";;"
- * @line: complete input of the user
- * @loop: number of the current loop
- * @argv: array of argument strings
- * Return: 1 if finds ";" or ";;", 0 if not
+ * @line: complete input of user
+ * @loop: number of actual loop
+ * @argv: array of argument string
+ * Return: 1 if find ";" or ";;" or 0 if not
  */
 int semicolon(char *line, int loop, char **argv)
 {
@@ -41,11 +41,10 @@ int semicolon(char *line, int loop, char **argv)
 	}
 	return (valid);
 }
-
 /**
- * _comments - remove commentaries
- * @line: input of the user
- * Return: the new input without comments
+ *_comments - remove commentaries
+ *@line: input of user
+ * Return: the new input
  */
 char *_comments(char *line)
 {
@@ -53,7 +52,6 @@ char *_comments(char *line)
 
 	while (line[c] != '\0')
 		c++;
-
 	while (line[a] != '\0')
 	{
 		if (line[0] == '#')
@@ -61,20 +59,17 @@ char *_comments(char *line)
 			flag = 1;
 			break;
 		}
-		if (line[a] == '#' && (a == 0 || line[a - 1] == ' '))
+		if (line[a] == '#' && line[a - 1] == ' ')
 		{
 			flag = 1;
 			break;
 		}
 		a++;
 	}
-
 	if (flag == 1)
 	{
 		for (; a < c; a++)
-			line[a] = '\0';
+			line[a] = 0;
 	}
-
 	return (line);
 }
-

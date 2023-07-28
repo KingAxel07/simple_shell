@@ -1,23 +1,23 @@
 #include "shell.h"
 
 /**
- * get_home_directory - function to get the value of the `HOME` environment variable
- * @env: copy of environment variables
- * Return: The string inside the `HOME` environment variable
+ * _gethome - funtion to get env HOME
+ * @m: copy of environment variables
+ *Return: string inside the HOME env variable
  */
-char *get_home_directory(char **env)
+char *_gethome(char **m)
 {
 	int i, j, k, cont = 0;
-	char search_str[] = "HOME=";
-	char *home_dir = NULL;
+	char str[] = "HOME=";
+	char *home = NULL;
 
-	for (i = 0; env[i] != NULL; i++)
+	for (i = 0; m[i] != NULL; i++)
 	{
-		for (j = 0; env[i][j] != '\0'; j++)
+		for (j = 0; m[i][j] != '\0'; j++)
 		{
 			if (cont == 5)
 				break;
-			if (env[i][j] == search_str[j])
+			if (m[i][j] == str[j])
 				cont++;
 			else
 				break;
@@ -27,12 +27,11 @@ char *get_home_directory(char **env)
 	}
 	if (cont == 5)
 	{
-		home_dir = env[i];
+		home = m[i];
 		for (k = 0; k < 5; k++)
 		{
-			home_dir++;
+			home++;
 		}
 	}
-	return (home_dir);
+	return (home);
 }
-

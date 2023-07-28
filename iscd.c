@@ -1,125 +1,119 @@
 #include "shell.h"
 #define BUF_SIZE 2048
-
 /**
- * check_cd_builtin - checks if the input is a "cd" builtin command
- * @args: input of user, array of pointers
+ * _iscd - finds if line input is cd builtin
+ * @p: input of user, array of pointers
  * @loop: counter of loop
- * @argv: arguments in input
- * @env: copy of environment variables
- * Return: -1 if not a "cd" command, 0 if it is a "cd" command
+ * @v: arguments in input
+ * @myenv: copy of environment variables
+ * Return: -1 if not success 0 if exist cd in args[0]
  */
-int check_cd_builtin(char **args, int loop, char *argv[], char **env)
+int _iscd(char **p, int loop, char *v[], char **myenv)
 {
-	char command[] = "cd";
-	int i = 0, count = 0, value = -1;
+	char str[] = "cd";
+	int i = 0, cont = 0, valor = -1;
 
-	while (args[0][i] != '\0')
+	while (p[0][i] != '\0')
 	{
 		if (i < 2)
 		{
-			if (args[0][i] == command[i])
-				count++;
+			if (p[0][i] == str[i])
+				cont++;
 		}
 		i++;
 	}
 	if (i == 2)
-		count++;
+		cont++;
 
-	if (count == 3)
+	if (cont == 3)
 	{
-		change_directory(args, loop, argv, env);
-		value = 0;
+		_cd(p, loop, v, myenv);
+		valor = 0;
 	}
-	else if (count == 2)
+	else if (cont == 2)
 	{
-		print_error(args, loop, 3, argv);
-		value = 0;
+		_put_err(p, loop, 3, v);
+		valor = 0;
 	}
-	return (value);
+	return (valor);
 }
 
 /**
- * clean_buffer - clean the buffer
- * @buffer: pointer to the buffer
- * Return: None
+ * _cleancd - clean buffer
+ * @c: pointer to buf
+ * Return: -1 if not success 0 if exist cd in args[0]
  */
-void clean_buffer(char *buffer)
+void _cleancd(char *c)
 {
 	int i;
 
 	for (i = 0; i < BUF_SIZE; i++)
-		buffer[i] = 0;
+		c[i] = 0;
 }
 
 /**
- * fill_buffer - fill the buffer with data
- * @buffer: pointer to the buffer
- * @aux: pointer to aux data
- * Return: None
+ * _fullcd - fill buffer
+ * @f: pointer to buf
+ * @aux: pointer to aux
+ * Return: -1 if not success 0 if exist cd in args[0]
  */
-void fill_buffer(char *buffer, char *aux)
+void _fullcd(char *f, char *aux)
 {
 	int w;
 
 	for (w = 0; aux[w] != '\0'; w++)
-		buffer[w] = aux[w];
+		f[w] = aux[w];
 	for (; w < BUF_SIZE; w++)
-		buffer[w] = 0;
+		f[w] = 0;
 }
-
 /**
- * change_directory - Changes the current directory of the process.
- * @args: input of user, array of pointers
+ * _cd - Changes the current directory of the process.
+ * @a: input of user, array of pointers
  * @loop: loops counter
- * @argv: arguments in input
- * @env: copy of environment variables
- * Return: None
+ * @v: arguments in input
+ * @myenv: copy of environment variables
+ * Return:-1 if not find the directory or 0 if success
  */
-void change_directory(char **args, int loop, char *argv[], char **env)
+void _cd(char **a, int loop, char *v[], char **myenv)
 {
-	int value = 0, z = 0;
-	static char buffer[BUF_SIZE];
-	static int count = 1;
+	int valor = 0, z = 0;
+	static char buf[BUF_SIZE];
+	static int w = 1;
 	char *home, aux[BUF_SIZE] = {0};
 
 	currentstatus(&z);
-	if (count == 1)
-	{
-		home = _gethome(env);
+	if (w == 1)
+	{ home = _gethome(myenv);
 		if (!home)
 			getcwd(home, BUF_SIZE);
-		_update_oldpwd(getcwd(buffer, BUF_SIZE), env);
-		fill_buffer(buffer, _gethome(env));
-		count++;
+		_updateoldpwd(getcwd(buf, BUF_SIZE), myenv);
+		_fullcd(buf, _gethome(myenv));
+		w++;
 	}
-	if (args[1] == NULL)
+	if (a[1] == NULL)
 	{
-		clean_buffer(buffer);
-		getcwd(buffer, BUF_SIZE);
-		_update_oldpwd(buffer, env);
-		value = chdir((const char *)_gethome(env));
-		_update_pwd(_gethome(env), env);
+		_cleancd(buf);
+		getcwd(buf, BUF_SIZE);
+		_updateoldpwd(buf, myenv);
+		valor = chdir((const char *)_gethome(myenv));
+		_updatepwd(_gethome(myenv), myenv);
 	}
-	else if (args[1][0] == '-' && args[1][1] == '\0')
+	else if (a[1][0] == '-' && a[1][1] == '\0')
 	{
-		clean_buffer(aux);
-		getcwd(aux, BUF_SIZE);
-		_update_oldpwd(aux, env);
-		write(STDOUT_FILENO, buffer, BUF_SIZE);
+		_cleancd(aux), getcwd(aux, BUF_SIZE);
+		_updateoldpwd(aux, myenv);
+		write(STDOUT_FILENO, buf, BUF_SIZE);
 		write(STDOUT_FILENO, "\n", 1);
-		value = chdir((const char *) buffer);
-		_update_pwd(buffer, env);
-		fill_buffer(buffer, aux);
+		valor = chdir((const char *) buf);
+		_updatepwd(buf, myenv), _fullcd(buf, aux);
 	}
 	else
 	{
-		clean_buffer(buffer);
-		getcwd(buffer, BUF_SIZE);
-		_update_oldpwd(buffer, env);
-		value = chdir((const char *)args[1]);
-		_update_pwd(args[1], env);
+		_cleancd(buf), getcwd(buf, BUF_SIZE);
+		_updateoldpwd(buf, myenv);
+		valor = chdir((const char *)a[1]);
+		_updatepwd(a[1], myenv);
 	}
-	if (value == -1)
-		print_error(args, loop, 1, argv);
+	if (valor == -1)
+		_put_err(a, loop, 1, v);
 }

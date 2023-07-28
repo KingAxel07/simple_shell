@@ -1,19 +1,17 @@
 #include "shell.h"
-
 /**
- * free_2d_array - free a dynamically allocated 2D array (matrix)
- * @matrix: The matrix to be freed
- * @rows: The number of rows in the matrix
- * Return: Nothing
+ * free_grid - free a matrix
+ * @grid: it is the matrix
+ * @height: height of the matrix
+ * Return: nothing
  */
-void free_2d_array(char **matrix, int rows)
+void free_grid(char **grid, int height)
 {
 	int i;
 
-	for (i = 0; i < rows; i++)
+	for (i = 0; i < height; i++)
 	{
-		free(matrix[i]);
+		free(grid[i]);
 	}
-	free(matrix);
+	free(grid);
 }
-
